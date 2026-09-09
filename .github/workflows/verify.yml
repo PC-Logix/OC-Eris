@@ -1,0 +1,25 @@
+name: Verify Eris sources
+
+on:
+  push:
+    branches: [master, master-lua5.3, master-lua5.4]
+  pull_request:
+    branches: [master, master-lua5.3, master-lua5.4]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eris-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Eris and bundled Lua
+        run: make linux
+      - name: Run Eris persistence tests
+        run: make test
